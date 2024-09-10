@@ -50,6 +50,7 @@ The navbar uses 2 components: [navbar.blade.php](/resources/views/components/nav
     ```
 
 Then there is another 'unactive' feature in the navbar. That is when we click on the `profile` picture, there shall be a small pop up of `your profile`, `settings` and `sign out`. Which codes are also a part of the tailwind original code.
+
 ![alt text](image-7.png)
 ```html
 <div x-show="isOpen"
