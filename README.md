@@ -17,17 +17,19 @@ In this first week, our objectives are:
 
 From the tutorial video(s) that we are given, there are 4 main webpages: `homepage`, `about`, `blog`, and `contact`.  As a 'report' form of the assignment, these are the four UI pages from my website:
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
+![image](https://github.com/user-attachments/assets/5f1e44bf-1e0b-4e25-b6c1-d1d687035fc9)
+![image-1](https://github.com/user-attachments/assets/d73b1c3a-cbf2-420f-90b6-62896ba8b472)
+![image-2](https://github.com/user-attachments/assets/61fc481a-1414-4111-a67b-0e3c9af9b4ef)
+![image-3](https://github.com/user-attachments/assets/67c2cc1d-ef0a-4261-bad4-4b80709bdfe5)
+
 The main attractives from this page is all basically a free `css tailwind` template all straight from the tutorial. There are no big difference (yet) from all pages. To narrow explanation, it will be best by describing the main 3 parts of the web.
 
 ### navigation bar (navbar)
-![alt text](image-4.png)
+![image-4](https://github.com/user-attachments/assets/2bf2a46f-134f-4812-b9fe-4e84fa31eccb)
+
 The navbar contains 6 objectives: a logo, 4 navigation links (to other pages) and a profile. In my navbar, I made small changes beside the video, that is changing the navbar's color (previously `bg-gray-800` to now a cheerful `bg-yellow-100`), then adding my own logo and profile image.
 
-![alt text](image-5.png)
+![image-5](https://github.com/user-attachments/assets/4b2023d9-ddbb-4dd0-a5ba-b14b9e9178e0)
 
 in adding those local images, is to first make a `img` directory in the `public` directory. Then calling them as dir paths in the code `src="img/logo.png"` and `src="img/snopi.jpeg"`. 
 
@@ -35,7 +37,7 @@ When using the laravel framework, there are these 'shortcuts' to make programmin
 
 For example, visualize each webpage as a 'usual' `blade` code, where there are seperately 4 blades and later on 4 different contents in 4 different pages. However, for all 'template' views in all pages, we utilize the blade files that became `components` using the command `php artisan make:component <component_name>`. 
 
-![alt text](image-6.png)
+![image-6](https://github.com/user-attachments/assets/0686e054-d663-4637-95ed-fbef38289efb)
 
 The navbar uses 2 components: [navbar.blade.php](/resources/views/components/navbar.blade.php) and [navlink.blade.php](/resources/views/components/navlink.blade.php) both located in `resources/views/components` dir. 
 - The `navlink` component is to help navigate the user of which active page they are on. Like for instance, if they are in the homepage, then the homepage section shall in be colored as grey in the navbar, whereas the other sections are just plain yellow background. 
@@ -51,7 +53,7 @@ The navbar uses 2 components: [navbar.blade.php](/resources/views/components/nav
 
 Then there is another 'unactive' feature in the navbar. That is when we click on the `profile` picture, there shall be a small pop up of `your profile`, `settings` and `sign out`. Which codes are also a part of the tailwind original code.
 
-![alt text](image-7.png)
+![image-7](https://github.com/user-attachments/assets/1323b339-7f2a-46d4-8c75-eb4cef71b141)
 ```html
 <div x-show="isOpen"
     x-transition:enter="transition ease-out duration-100 transform"
@@ -71,11 +73,13 @@ Then there is another 'unactive' feature in the navbar. That is when we click on
 ```
 
 and last from the navbar is the `mobile` version. Where the website was made responsive from the tailwind template. So when the web window was minimized, it shows a simple responsive view.
-![alt text](<Untitled design (9).png>)
+<img width="1440" alt="Untitled design (9)" src="https://github.com/user-attachments/assets/fcd60312-5e5b-4701-963f-8e1644236eec">
+
 when minimized, the navbar only contains the logo and a simple three line icon on the upper left. When the icon is clicked, it will preview the previous navigation menus and profile menus. 
 
 ### header
-![alt text](image-8.png)
+![image-8](https://github.com/user-attachments/assets/5c6020c0-e55f-4bb4-aae2-66768c812858)
+
 Quite different from the navbar, the header had a lot simple code structure, with only one blade component [header.blade.php](/resources/views/components/header.blade.php). However, to determine each text shown in each page, is to first add an `associative array` in the [web.php](/routes/web.php), just beside the page that connnect each web page.
 
 ```php
@@ -113,7 +117,7 @@ the `title` stated each page where later will be shown in the header. But instea
 Since the associative array in the route is connected to each web page blade, it is not possible to directly call them from the header component. So, within the header component, it will still be filled with the `slot` variable, then later on in the home blade we use `x-slot:title` and call the `title` variable in it. From there all three files are connected.
 
 ### page content
-![alt text](image-9.png)
+![image-9](https://github.com/user-attachments/assets/9a07ae0c-da52-479c-915e-34ffb90b5cb5)
 Before filling in content, there is a need to explain one more component, the [layout.blade.php](/resources/views/components/layout.blade.php). Since every html file had a certain structure, so instead of repeating it all the time, the `layout` component came in handy. Within the component, is the basic html code, from `doctype` to the end `</html>` and in the `<body> </body>` is where the navbar and header component is called using `<x-navbar>` and `<x-header>` and in the `<main>`, is a usual layouting code and a `$slot` variable for the real page content later filled in each page blades, using `<x-layout>`.
 
 - `layout.blade.php`
