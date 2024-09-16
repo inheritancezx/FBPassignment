@@ -159,7 +159,7 @@ In this week, our objectives are:
 ### view
 The goal of the view is quite simple, displaying articles in the blog page and articles datas are accessed from the route (this is actually an easier way to understand of the view and model concept later on).
 
-[blog-page image]
+![Screenshot (359)](https://github.com/user-attachments/assets/3988e9b7-45ac-4446-b5f9-4fc5972f8211)
 
 There will be 4 components of the article showed in the blog page. `title`, `author details`, `content` and finally `read-more button`. Why having a read more button? because the goal of the page is just to display all the available ariticles, not the whole content of all articles. Also, due to this need, where there will be am article communal page and an individual page, the blades `blog.blade.php` will be renamed [posts.blade.php](/resources/views/posts.blade.php) as the communal page and adding [post.blade.php](/resources/views/post.blade.php) as each individual article page.
 
@@ -238,7 +238,7 @@ each individual article page, is almost the same as the communal page, with 3 di
 </article>
 ```
 
-[velaris individual page]
+![Screenshot (360)](https://github.com/user-attachments/assets/886026d0-b2dd-46b4-83c8-3ed6eca02554)
 
 to display the individual page, the route will also be added and due to of article data still need to accessed, the individual article route (post) had the exact same associative array with the communal article route (posts).
 
