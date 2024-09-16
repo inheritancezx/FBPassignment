@@ -146,3 +146,196 @@ Before filling in content, there is a need to explain one more component, the [l
     ```
 
 Those are all necessary UI changes made from the first-four tutorial videos in the first week. Thank you >.<
+
+<br>
+
+## Week 2
+In this week, our objectives are:
+
+- making a view-concept for article data
+- understanding the model concept
+- implementing of both the view and model concept
+
+### view
+The goal of the view is quite simple, displaying articles in the blog page and articles datas are accessed from the route (this is actually an easier way to understand of the view and model concept later on).
+
+[blog-page image]
+
+There will be 4 components of the article showed in the blog page. `title`, `author details`, `content` and finally `read-more button`. Why having a read more button? because the goal of the page is just to display all the available ariticles, not the whole content of all articles. Also, due to this need, where there will be am article communal page and an individual page, the blades `blog.blade.php` will be renamed [posts.blade.php](/resources/views/posts.blade.php) as the communal page and adding [post.blade.php](/resources/views/post.blade.php) as each individual article page.
+
+To implement the article to a view concept, we use an associative array in the route, named `posts` with `title`, `author` and `content`.
+
+```php
+Route::get('/posts', function () {
+    return view('posts', ['title' => 'blog', 'posts' => [
+        [
+            'id' => 1,
+            'slug' => 'velaris-city-of-starlight',
+            'title' => 'velaris; city of starlight',
+            'author' => 'not skye',
+            'content' => 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. 
+            Nam, hic eum. Magni fugiat necessitatibus quia, ipsa voluptates et. 
+            Quod aliquam facere iure obcaecati quisquam voluptates nisi asperiores, 
+            cupiditate deserunt dignissimos.'
+        ],
+        [
+            'id' => 2,
+            'slug' => 'aretia-city-from-the-fallen',
+            'title' => 'aretia; city from the fallen',
+            'author' => 'not skye',
+            'content' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. 
+            Repellendus, totam culpa? Commodi autem veritatis, itaque quia dolorem quidem ducimus, 
+            laudantium recusandae consequatur assumenda quas molestiae amet vero impedit ex delectus?'
+        ],
+        [
+            'id' => 3,
+            'slug' => 'soberone-city-of-no-city',
+            'title' => 'soberone; city of no city',
+            'author' => 'himmelya',
+            'content' => 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+            Esse, iste provident cupiditate ratione vitae repellat aut vero quidem quasi, 
+            sapiente magni consequuntur sint sit numquam adipisci. Commodi, molestiae facilis! Neque.'
+        ]
+    ]]);
+});
+```
+
+NOTE: the `id` and `slug` is to ease when trying to find the chosen article to be displayed
+
+in the posts blade page, all that is needed to be diplayed utilizes the `{{ $post[title/author/content] }}` expression and to simplify all that will be 'printed' in the blog page, we used directives `@foreach` and `@endforeach`. Other small details include a shortage of contents displayed using `Str` func and a use of pagination `&raquo` (right angle quote) in the read more button.
+
+the `href` to link of the communal page to each individual page, is based on the id/slug assigned (as mentioned before). Difference of both indicators is just `id` uses numbers and `slug` uses words but both were passed using string data type.
+
+```html
+@foreach ($posts as $post)
+    <article class="py-8 max-w-screen-md border-b border-gray-300">
+    <a href="/posts/{{ $post['slug'] }}">
+        <h3 class="mb-1 text-2xl tracking-tight font-bold text-gray-900">{{ $post['title'] }}</h3>
+    </a>
+    <div class="text-base text-gray-500">
+        <a href="#">{{ $post['author'] }}</a> | 14 April 2023
+    </div>
+    <p class="my-4 font-light">{{ Str::limit($post['content'], 175) }}</p>
+    <a href="/posts/{{ $post['slug'] }}" class="font-medium text-blue-500 hover:underline">read more &raquo;</a>
+</article>
+@endforeach
+```
+
+each individual article page, is almost the same as the communal page, with 3 difference:
+
+- without a `for` directive
+- without a string limitation
+- the button became a back to post button using a `&laquo;` pagination.
+
+```html
+<article class="py-8 max-w-screen-md">
+    <h3 class="mb-1 text-2xl tracking-tight font-bold text-gray-900">{{ $post['title'] }}</h3>
+    <div class="text-base text-gray-500">
+        <a href="#">{{ $post['author'] }}</a> | 14 April 2023
+    </div>
+    <p class="my-4 font-light">{{ $post['content'] }}</p>
+    <a href="/posts" class="font-medium text-blue-500 hover:underline">&laquo; back to posts</a>
+</article>
+```
+
+[velaris individual page]
+
+to display the individual page, the route will also be added and due to of article data still need to accessed, the individual article route (post) had the exact same associative array with the communal article route (posts).
+
+However to link, there is a need to add several other function. Using the `Arr::first` function (library need to be imported first), the page will access only the set of article data based on the 'truth test' of slug passed in the argument. 
+
+```php
+Route::get('/posts/{slug}', function ($slug) {
+    $posts =[
+        ...
+        ...
+    ];
+
+    $post = Arr::first($posts, function($post) use($slug) {
+        return $post['slug'] == $slug;
+    });
+
+    ...
+});
+```
+only then, will the view is appropriate to be return.
+```php
+Route::get('/posts/{slug}', function ($slug) {
+    ...
+    ...
+
+    return view('post', ['title' => 'post', 'post' => $post]);
+});
+```
+### model
+the model concept changes nothing of the UI appearance. However, it does change of how the article data is managed. First, is (obv) changing the repeated article data stored in the route (in posts and post route) to a seperate class named `post` in a model [post.php](/app/Models/post.php) and setting a `namesapce` for it so it doesn't get mixed up with other functions in the future. 
+
+```php
+class post {
+    public static function all() {
+        return [
+            [
+                'id' => 1,
+                'slug' => 'velaris-city-of-starlight',
+                'title' => 'velaris; city of starlight',
+                'author' => 'not skye',
+                'content' => 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. 
+                Nam, hic eum. Magni fugiat necessitatibus quia, ipsa voluptates et. 
+                Quod aliquam facere iure obcaecati quisquam voluptates nisi asperiores, 
+                cupiditate deserunt dignissimos.'
+            ],
+            [
+                'id' => 2,
+                'slug' => 'aretia-city-from-the-fallen',
+                'title' => 'aretia; city from the fallen',
+                'author' => 'not skye',
+                'content' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. 
+                Repellendus, totam culpa? Commodi autem veritatis, itaque quia dolorem quidem ducimus, 
+                laudantium recusandae consequatur assumenda quas molestiae amet vero impedit ex delectus?'
+            ],
+            [
+                'id' => 3,
+                'slug' => 'soberone-city-of-no-city',
+                'title' => 'soberone; city of no city',
+                'author' => 'himmelya',
+                'content' => 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                Esse, iste provident cupiditate ratione vitae repellat aut vero quidem quasi, 
+                sapiente magni consequuntur sint sit numquam adipisci. Commodi, molestiae facilis! Neque.'
+            ]
+        ];
+    }
+
+    public static function find($slug) {
+        ...
+        ...
+    }
+}
+```
+in the class there will be two static functions, `all()` and `find()`. Already displayed, the all function consists of the article data. Where later on, in the route will simply called as an imported model `use App\Models\post;` and a `post::all()` to call the function.
+
+the function find on the other hand, is to help manage the single article data when called. There are two ways to build the function, using a `callback function` or an `arrow function`:
+
+- callback function
+    ```php
+    $post = Arr::first(static::all(), function($post) use($slug) {
+            return $post['slug'] == $slug;
+        });
+    ```
+- arrow function
+    ```php
+    $post = Arr::first(static::all(), fn($post) => $post['slug'] == $slug);
+    ```
+NOTE: `static` function is actually `post` function, but written as so beacuse it's calling a function inside a function of a same class
+
+both function had no difference on to operate, just the way on writing down the code is that arrow function had a much more simple structure. This function is actually a replica of the previous code on how to connect a communal page to each of the individual page.
+
+lastly, to make the webpage more user-friendly, is to add a `404 not found` page when the slug entered is none of the respective slugs. To do so, is to use the variable `$post` as a branch argument.
+
+```php
+if(!$post){
+    abort(404);
+} else { return $post; }
+```
+the `abort` func is a laravel function of the not found page.
+
+Those are all necessary UI changes made from tutorial video 6 and 7 done in the second week. thanl you :)
