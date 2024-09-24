@@ -336,6 +336,77 @@ if(!$post){
     abort(404);
 } else { return $post; }
 ```
-the `abort` func is a laravel function of the not found page.
+the `abort` func, esp the `404` is a laravel function of the not found page.
 
 Those are all necessary UI changes made from tutorial video 6 and 7 done in the second week. thanl you :)
+
+## Week 3
+This week, our objectives are:
+
+- making a database migration 
+- displaying data directly from database
+- using tinker in inserting the data to the database
+
+There are no UI changes at all in this week session. All that is different is the code structure in managing the data later be displayed. All changes happened in the backend.
+
+### database
+before all process, is to firstly connect the project with a database. This where we need `SQLite` as the rdbms to manage the data and with the help of `tableplus` to connect them. When already connected, only then we can use the database.
+
+[tableplus img]
+
+### migration
+This process allows anyone who take part in building up the laravel project to have the exact same database scheme. So, to add a database that may connect through out all the project, is to first make the `migration`. 
+
+`php artisan make:migration`
+
+Also, the naming format of a migration is quite unique. last week, there is this form named model, then migration is like an "extension" of the model where it manages the database (database later will manage the data). If a model is named after `post`, then the migration will be named as `create_posts_table` where the database table will be automatically named `posts` with an `s`.
+
+To stabilize this form, the previous made model will be made anew and adding a migration corresponding to it respectively.
+
+`php artisan make:model post -m`
+
+the `-m` is to make the migration of the designated model. this command produce the [post.php](/app/Models/post.php) model and the [create_posts_table.php](/database/migrations/2024_09_23_113721_create_posts_table.php) migration.
+
+migrations also have many commands, one of them is the `migrate:fresh` where for an already migrated local will endure the tables all be dropped and migrate anew, old and new migrations file be migrated together. However, when running this command in a developed env, there are no precautious questions, so the process will be done once excetued and all the previous data will be refreshed back to start.
+
+in the `create_posts_table` migration file, we will fill in with the entities needed in the table, later when running the migration will this table be constructed.
+
+```php
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->string('author');
+            $table->text('content');
+            $table->timestamps();
+        });
+    }
+
+    ...
+    ...
+};
+```
+
+### tinker
+previously, data was added in the form of arrays in the route [web.php](/routes/web.php). Now, as we already had the database connected from our project, we need to add data into it. Instead of adding data manually from the rdbms, we can use tinker in inserting the data. 
+
+[tinker img]
+
+The tinker has a multiline mode, where we can add multiple lines and execute it as a single command. from the image, we insert each of the entity with a value using the `=>` symbol and an enabling it from the model [post.php](/app/Models/post.php) adding a `fillable` function, where all entity that can be filled is entered within.
+
+```php
+class post extends Model {
+    use HasFactory;
+
+    protected $fillable = ['title', 'author', 'slug', 'content'];
+}
+```
+
+That is all for this week's update, thank you  𓆝⋆｡˚ 𓇼
