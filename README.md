@@ -352,7 +352,7 @@ There are no UI changes at all in this week session. All that is different is th
 ### database
 before all process, is to firstly connect the project with a database. This where we need `SQLite` as the rdbms to manage the data and with the help of `tableplus` to connect them. When already connected, only then we can use the database.
 
-[tableplus img]
+![image](https://github.com/user-attachments/assets/ea3f6060-ec74-4e8f-805c-b433378820d6)
 
 ### migration
 This process allows anyone who take part in building up the laravel project to have the exact same database scheme. So, to add a database that may connect through out all the project, is to first make the `migration`. 
@@ -397,7 +397,7 @@ return new class extends Migration
 ### tinker
 previously, data was added in the form of arrays in the route [web.php](/routes/web.php). Now, as we already had the database connected from our project, we need to add data into it. Instead of adding data manually from the rdbms, we can use tinker in inserting the data. 
 
-[tinker img]
+![image](https://github.com/user-attachments/assets/bd64414e-5237-4a93-8ac5-944bbf1eb2d4)
 
 The tinker has a multiline mode, where we can add multiple lines and execute it as a single command. from the image, we insert each of the entity with a value using the `=>` symbol and an enabling it from the model [post.php](/app/Models/post.php) adding a `fillable` function, where all entity that can be filled is entered within.
 
