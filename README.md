@@ -410,3 +410,138 @@ class post extends Model {
 ```
 
 That is all for this week's update, thank you  𓆝⋆｡˚ 𓇼
+
+## Week 4
+This week, our objectives are:
+
+- understanding model factories
+- using the relation to data using eloquent
+- database seeder
+
+Similar to last week, there are only slight UI changes in this week session. Mostly that is different is the code structure in managing the data later be displayed. Those changes happened in the backend.
+
+### model factories
+model factories is actually a part of database manage-tool of the model itself. To easily understand how a factory work, is to implement the usage step by step (although many would change in the upcoming videos).
+
+to generate a factory is to ... and within a factory of a model is the scheme of the entity table later on in the database. (almost like calling an `insert` sql query but using php codes in the php files).
+
+```php
+public function definition(): array
+    {
+        return [
+            'title' => fake()->sentence(),
+            'author' => fake()->name(),
+            'slug' => Str::slug(fake()->sentence()),
+            'content' => fake()->text(),
+        ];
+    }
+```
+
+in this project we use a `faker` laravel function to generate  data in within each attribute. As for the slug, to generate the slug-format is to use the string library calling the `slug` function itself, `'slug' => Str::slug(fake()->sentence())`.
+
+```
+APP_FAKER_LOCALE=ko_KR
+```
+
+Also another configure in the `.env` file is to arrange the `locale` of the project. personally, this project is set to use the korean origin locale.
+
+When implementing the model factory concept is done, to call the data will be by using `tinker` with the command:
+
+```
+App\Models\Post::factory(10)->create();
+```
+
+[tinker factory create img]
+
+the `factory(10)` is to indicate there will be 10 new data insertedd in the database.
+
+### eloquent relationship
+just like the name, this part of the objective is to relate on table to another, in our case the relation that we 'create' is `one to many`. One way to do it based on the tutorial is to assign a `foreign key` in within the migration of the many table and to call the the one factory in the many factory of the designated attribute.
+
+- [create_posts_table](/database/migrations/2024_09_23_113721_create_posts_table.php) migration
+    ```php
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            ...
+
+            $table->foreignId('author_id')->constrained(
+                table: 'users',
+                indexName: 'post_author_id'
+            );
+            
+            ...
+        });
+    }
+    ```
+    *the other attributes of the entity remains the same
+
+- [postFactory](/database/factories/postFactory.php)
+    ```php
+    public function definition(): array
+    {
+        return [
+            ...
+            
+            'author_id' => User::factory(),
+
+            ...
+        ];
+    }
+    ```
+    *the other attributes of the entity remains the same
+
+[structure of posts table img]
+
+Then to make the relations much visible is to implement the 'real' `eloquent relation` library using the `BelongsTo` and `HasMany` functions in the model files.
+
+- [post.php](/app/Models/post.php)
+    ```php
+    class post extends Model {
+        ...
+
+        public function author(): BelongsTo {
+            return $this->belongsTo(User::class);
+        }
+    }
+    ```
+- [user.php](/app/Models/User.php)
+    ```php
+    class User extends Authenticatable {
+        ...
+
+        public function posts(): HasMany {
+            return $this->hasMany(post::class, 'author_id');
+        }
+    }
+    ```
+to insert the data, will per usual call within the `tinker`. However, the difference will be by assigning one user to many posts, we will utilize the `recycle` command in the tinker.
+
+```
+App\Models\Post::factory(100)->recycle(User::factory(5)->create())->create();
+```
+*this means that for 100 posts, there will be 5 random author distributed in writing it
+
+[tinker call 100 posts to 5 user img]
+
+the functions `BelongsTo` and `HasMany` also has the privilage of calling the author of the post in a post tinker.
+
+[$post->author img]
+
+and vice versa, what posts has an author written
+
+[$user->posts img]
+
+**note: we will also need to make slight changes in the blade, replacing `{{ $post['author'] }}` to `{{ $post->author-> name }}`**
+
+Also a slight change in the UI will be that we are able to display the author's writing in a single author page.
+
+[single author page img]
+
+first changes will absolutely involve the route
+```php
+Route::get('/authors/{user}', function (User $user) {
+    return view('posts', ['title' => 'articles by ' . $user->name, 'posts' => $user->posts]);
+});
+```
+and slight changes in the `href` of the posts and post blades by adding `authors/{{ $post->author->id }}`
