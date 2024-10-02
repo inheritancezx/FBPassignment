@@ -453,10 +453,12 @@ App\Models\Post::factory(10)->create();
 
 [tinker factory create img]
 
-the `factory(10)` is to indicate there will be 10 new data insertedd in the database.
+the `factory(10)` is to indicate there will be 10 new data insertedd in the database. By then, the data inserted will be able to be displayed in the blog page.
+
+[blog page image]
 
 ### eloquent relationship
-just like the name, this part of the objective is to relate on table to another, in our case the relation that we 'create' is `one to many`. One way to do it based on the tutorial is to assign a `foreign key` in within the migration of the many table and to call the the one factory in the many factory of the designated attribute.
+just like the name, this part of the objective is to relate on table to another, in our case the relations are `one to many`. One way to do it based on the tutorial is to assign a `foreign key` in within the migration of the many table and to call the the one factory in the many factory of the designated attribute. There is also a new migration made namely `create_categories_table` where it handles the category of each posts.
 
 - [create_posts_table](/database/migrations/2024_09_23_113721_create_posts_table.php) migration
     ```php
@@ -469,7 +471,11 @@ just like the name, this part of the objective is to relate on table to another,
                 table: 'users',
                 indexName: 'post_author_id'
             );
-            
+            $table->foreignId('category_id')->constrained(
+                table: 'categories',
+                indexName: 'post_category_id'
+            );
+
             ...
         });
     }
@@ -484,6 +490,7 @@ just like the name, this part of the objective is to relate on table to another,
             ...
             
             'author_id' => User::factory(),
+            'category_id' => Category::factory(),
 
             ...
         ];
@@ -503,6 +510,10 @@ Then to make the relations much visible is to implement the 'real' `eloquent rel
         public function author(): BelongsTo {
             return $this->belongsTo(User::class);
         }
+
+        public function category(): BelongsTo {
+            return $this->belongsTo(Category::class);
+        }
     }
     ```
 - [user.php](/app/Models/User.php)
@@ -515,33 +526,52 @@ Then to make the relations much visible is to implement the 'real' `eloquent rel
         }
     }
     ```
+- [category.php](/app/Models/Category.php)
+    ```php
+    class Category extends Model {
+        ...
+
+        public function posts(): HasMany {
+            return $this->hasMany(post::class, 'category_id');
+        }
+    }
+    ```
 to insert the data, will per usual call within the `tinker`. However, the difference will be by assigning one user to many posts, we will utilize the `recycle` command in the tinker.
 
 ```
-App\Models\Post::factory(100)->recycle(User::factory(5)->create())->create();
+App\Models\Post::factory(100)->recycle([User::factory(5)->create(), Category::factory(3)->create()])->create();
 ```
-*this means that for 100 posts, there will be 5 random author distributed in writing it
+*this means that for 100 posts, there will be 5 random author distributed in writing it and 3 random categories classifying it.
 
-[tinker call 100 posts to 5 user img]
+[tinker call 100 posts to 5 user and 3 category img]
 
-the functions `BelongsTo` and `HasMany` also has the privilage of calling the author of the post in a post tinker.
+the functions `BelongsTo` and `HasMany` also has the privilage of calling the a data from one table from the other table in tinker.
 
 [$post->author img]
 
-and vice versa, what posts has an author written
+and vice versa
 
 [$user->posts img]
 
-**note: we will also need to make slight changes in the blade, replacing `{{ $post['author'] }}` to `{{ $post->author-> name }}`**
+**note: we will also need to make slight changes in the blade, replacing `{{ $post['author'] }}` to `{{ $post->author->name }}`**
 
 Also a slight change in the UI will be that we are able to display the author's writing in a single author page.
 
-[single author page img]
+[author of posts img]
 
-first changes will absolutely involve the route
+that includes when calling posts from a certain category
+
+[category of posts img]
+
+changes will absolutely involve the route
 ```php
 Route::get('/authors/{user}', function (User $user) {
     return view('posts', ['title' => 'articles by ' . $user->name, 'posts' => $user->posts]);
 });
+
+Route::get('/categories/{category:slug}', function (Category $category) {
+    return view('posts', ['title' => ' articles in ' . $category->name, 'posts' => $category->posts]);
+});
+
 ```
-and slight changes in the `href` of the posts and post blades by adding `authors/{{ $post->author->id }}`
+and slight changes in the `href` of the posts and post blades by adding `authors/{{ $post->author->username }}` and `categories/{{ $post->author->slug }}`
