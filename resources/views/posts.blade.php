@@ -11,7 +11,7 @@
             by
             <a href="authors/{{ $post->author->username }}">{{ $post->author->name }}</a> 
             in
-            <a href="authors/{{ $post->category->slug }}">{{ $post->category->name }}</a>
+            <a href="categories/{{ $post->category->slug }}">{{ $post->category->name }}</a>
             | {{ $post->created_at->format('j F Y') }}
         </div>
         <p class="my-4 font-light">{{ Str::limit($post['content'], 175) }}</p>
