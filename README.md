@@ -575,3 +575,70 @@ Route::get('/categories/{category:slug}', function (Category $category) {
 
 ```
 and slight changes in the `href` of the posts and post blades by adding `authors/{{ $post->author->username }}` and `categories/{{ $post->author->slug }}`
+
+### seeder
+The functionality of seeder is actually fill in data in the tables without having to use `tinker`. In default of a laravel package, there is already a [databaseseeder.php](/database/seeders/DatabaseSeeder.php) ready to use, all we need is just to adjust and utilize the existing file.
+
+```
+php artisan make:seeder
+```
+*name of the seeder may be adjusted to personal use.
+
+To ensure the neat structure of the files in this project, the seed of `category` and `user` is seperated. apart from the structure, seperating both seeds also gives clearence, take it as for every table on the one end in a one to many table relationship is to be separated.
+
+- [userSeeder.php](/database/seeders/userSeeder.php)
+    ```php
+    class userSeeder extends Seeder {
+        public function run(): void {
+            User::factory(5)->create();
+        }
+    }
+    ```
+    this will create (per usual), 5 random authors
+
+- [categorySeeder.php](/database/seeders/categorySeeder.php)
+    ```php
+    class categorySeeder extends Seeder {
+        public function run(): void {
+            Category::create([
+                'name' => 'aretia, navarre',
+                'slug' => "aretia-navarre"
+            ]);
+
+            Category::create([
+                'name' => 'velaris, phyrrian',
+                'slug' => "velaris-phyrrian"
+            ]);
+
+            Category::create([
+                'name' => 'soberone, shifters',
+                'slug' => "soberone-shifters"
+            ]);
+
+            Category::create([
+                'name' => 'void, the aurora',
+                'slug' => "void-the-aurora"
+            ]);
+        }
+    }
+    ```
+    this will create 4 category of `aretia`, `velaris`, `soberone`, and `void` respectively. This data was made manually and will be generated as it is.
+
+and to generate data as whole is to configure the [DatabaseSeeder.php](/database/seeders/DatabaseSeeder.php) this act like the 'center' table of the whole database. the many end in a one to many relationship
+
+```php
+class DatabaseSeeder extends Seeder {
+    public function run(): void {
+        $this->call([categorySeeder::class, userSeeder::class]);
+        post::factory(100)->recycle([
+            Category::all(),
+            User::all()
+        ])->create();
+    }
+}
+```
+per-usual, this public function run is actually an adaptation of the usual command in the tinker. To finally utilize the seeder is to run the command `php artisan migrate:fresh --seed`. tho, take note that the `migrate:fresh` also enables dropping all data already stored in the tables.
+
+[migrate:fresh --seed img]
+
+That is all for this week's update, thank you ೄྀ࿐ ˊˎ-
