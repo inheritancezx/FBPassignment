@@ -451,11 +451,11 @@ When implementing the model factory concept is done, to call the data will be by
 App\Models\Post::factory(10)->create();
 ```
 
-[tinker factory create img]
+![c24ff86d2d4818c14216a20204a2805858040c8c 1](https://github.com/user-attachments/assets/43240448-957a-4736-a4d2-083b5c397617)
 
 the `factory(10)` is to indicate there will be 10 new data insertedd in the database. By then, the data inserted will be able to be displayed in the blog page.
 
-[blog page image]
+![c1f99a32780145c46ea7a79a206b8421e36f9536 1](https://github.com/user-attachments/assets/5399c8b5-c5f8-419c-879f-55b79af849f3)
 
 ### eloquent relationship
 just like the name, this part of the objective is to relate on table to another, in our case the relations are `one to many`. One way to do it based on the tutorial is to assign a `foreign key` in within the migration of the many table and to call the the one factory in the many factory of the designated attribute. There is also a new migration made namely `create_categories_table` where it handles the category of each posts.
@@ -498,7 +498,7 @@ just like the name, this part of the objective is to relate on table to another,
     ```
     *the other attributes of the entity remains the same
 
-[structure of posts table img]
+![35c139c1220459fac55156e21c92e8a19e9fa934 1](https://github.com/user-attachments/assets/d77f6e72-af62-46b8-922f-144d1dfb6115)
 
 Then to make the relations much visible is to implement the 'real' `eloquent relation` library using the `BelongsTo` and `HasMany` functions in the model files.
 
@@ -543,25 +543,25 @@ App\Models\Post::factory(100)->recycle([User::factory(5)->create(), Category::fa
 ```
 *this means that for 100 posts, there will be 5 random author distributed in writing it and 3 random categories classifying it.
 
-[tinker call 100 posts to 5 user and 3 category img]
+![dd9e2797e87539a12725b9926403e9080fa774e9 2](https://github.com/user-attachments/assets/8c68e198-e472-4894-8ce8-43ff23e7c7e3)
 
 the functions `BelongsTo` and `HasMany` also has the privilage of calling the a data from one table from the other table in tinker.
 
-[$post->author img]
+![9357af0c4eca1d5ae2674ab54f5b565fca60e446 1](https://github.com/user-attachments/assets/c4ccebb2-e106-47b8-8dbf-48dd81a526e6)
 
 and vice versa
 
-[$user->posts img]
+![eb5445cd2cb6e08c140e34d562926818f7f265fc 1](https://github.com/user-attachments/assets/fce9a9bb-dda5-43be-b1a9-1752e42cf49f)
 
 **note: we will also need to make slight changes in the blade, replacing `{{ $post['author'] }}` to `{{ $post->author->name }}`**
 
 Also a slight change in the UI will be that we are able to display the author's writing in a single author page.
 
-[author of posts img]
+![564ee0f8a90f552f0ec6c84b1e4a6b1dbb0a1597 1](https://github.com/user-attachments/assets/993c464b-1bdf-449b-9710-e928cc62f49c)
 
 that includes when calling posts from a certain category
 
-[category of posts img]
+![89aa72bd6063fa3398f8184dc29edb63e35772bb 1](https://github.com/user-attachments/assets/043345ad-49b7-46d8-bf5e-31ecefb35329)
 
 changes will absolutely involve the route
 ```php
@@ -639,6 +639,10 @@ class DatabaseSeeder extends Seeder {
 ```
 per-usual, this public function run is actually an adaptation of the usual command in the tinker. To finally utilize the seeder is to run the command `php artisan migrate:fresh --seed`. tho, take note that the `migrate:fresh` also enables dropping all data already stored in the tables.
 
-[migrate:fresh --seed img]
+![759880d97c38214a75d462721831b70f14d429f4 1](https://github.com/user-attachments/assets/a7b5342d-2aa7-4e8a-a24d-94b4bd870a24)
+
+and automatically, the display in the blog shall be with proper category:
+
+![image](https://github.com/user-attachments/assets/047310a0-6079-4e1e-8343-8d7a22a86c28)
 
 That is all for this week's update, thank you ೄྀ࿐ ˊˎ-
