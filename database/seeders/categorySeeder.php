@@ -14,22 +14,26 @@ class categorySeeder extends Seeder
     public function run(): void {
         Category::create([
             'name' => 'aretia, navarre',
-            'slug' => "aretia-navarre"
+            'slug' => "aretia-navarre",
+            'color' => 'orange'
         ]);
 
         Category::create([
             'name' => 'velaris, phyrrian',
-            'slug' => "velaris-phyrrian"
+            'slug' => "velaris-phyrrian",
+            'color' => "purple"
         ]);
 
         Category::create([
             'name' => 'soberone, shifters',
-            'slug' => "soberone-shifters"
+            'slug' => "soberone-shifters",
+            'color' => 'yellow'
         ]);
 
         Category::create([
             'name' => 'void, the aurora',
-            'slug' => "void-the-aurora"
+            'slug' => "void-the-aurora",
+            'color' => 'teal'
         ]);
     }
 }
