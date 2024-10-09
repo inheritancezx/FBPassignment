@@ -664,7 +664,7 @@ composer require barryvdh/laravel-debugbar --dev
 
 then the feature will appear once we reload the website page. the query number displayed in the `sql logo`, a good (too many) 205 query call.
 
-[image 207 query]
+![1ddbfb49add3d142d113cd388dc3b7d4611c124f 1](https://github.com/user-attachments/assets/df688d3f-3a13-4cf6-a783-48ce2d791199)
 
 to solve this problem is to simply optimize the query call using `$with` calling it within the `route` as well as adding an additional feature of blocking any lazy loading query calling in the `provider` section.
 
@@ -688,14 +688,14 @@ to solve this problem is to simply optimize the query call using `$with` calling
 
 and after implementing this method, reloding the page, the query will reduce to a good 6 query call.
 
-[6 query call img]
+![e5a28a43770a23a7c71f6d575a8a42277330338f 1](https://github.com/user-attachments/assets/af03a3bc-8d06-43de-8276-8d33280719a4)
 
 ### redesign UI
 not all UI is redesigned. just the blog to an event better UI. 
 
-[blog page image]
+![6a2d20bb14433fa007d5ec08e87c62b00530be06 1](https://github.com/user-attachments/assets/fa7ca8fb-168c-4057-af7a-3a647e2d36b1)
 
-[single page image]
+![6d7aa2649a76e49d74ec326f80b6365c5fdf88f7 1](https://github.com/user-attachments/assets/6f477cf4-f4fa-46ec-a76d-699d03f2992f)
 
 most changes happens only in the posts and post `blade`. Also, this time we used `flowbite`, another `css tailwind` friend that provide free template.
 
