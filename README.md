@@ -646,3 +646,121 @@ and automatically, the display in the blog shall be with proper category:
 ![image](https://github.com/user-attachments/assets/047310a0-6079-4e1e-8343-8d7a22a86c28)
 
 That is all for this week's update, thank you ೄྀ࿐ ˊˎ-
+
+## Week 5
+This week, our objectives are:
+
+- solving the n+1 problem
+- redesigning the web UI and how to manage it
+- perform searching
+- implement pagination
+
+### n+1 problem
+the n+1 problem is actually a back end query related problem. as of for every data displayed within the website, the queries happened in behind the scene is a 2-times-of-the-data query. To check this howmany-query-calling problem is by installing a `laravel debug bar`
+
+```php
+composer require barryvdh/laravel-debugbar --dev
+```
+
+then the feature will appear once we reload the website page. the query number displayed in the `sql logo`, a good (too many) 205 query call.
+
+[image 207 query]
+
+to solve this problem is to simply optimize the query call using `$with` calling it within the `route` as well as adding an additional feature of blocking any lazy loading query calling in the `provider` section.
+
+- [web.php](/routes/web.php)
+    ```php
+    Route::get('/posts', function () {
+    $posts=Post::latest()->get();
+    return view('posts', ['title' => 'blog', 'posts' => $posts]);
+    });
+    ```
+- [appserviceprovider.php](/app/Providers/AppServiceProvider.php)
+    ```php
+    class AppServiceProvider extends ServiceProvider {
+        ...
+
+        public function boot(): void {
+            Model::preventLazyLoading();
+        }
+    }
+    ```
+
+and after implementing this method, reloding the page, the query will reduce to a good 6 query call.
+
+[6 query call img]
+
+### redesign UI
+not all UI is redesigned. just the blog to an event better UI. 
+
+[blog page image]
+
+[single page image]
+
+most changes happens only in the posts and post `blade`. Also, this time we used `flowbite`, another `css tailwind` friend that provide free template.
+
+- [posts.blade.php](/resources/views/posts.blade.php)
+    ```php
+    @foreach ($posts as $post)                
+        <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+            <div class="flex justify-between items-center mb-5 text-gray-500">
+                <span class="bg-{{ $post->category->color }}-100 text-{{ $post->category->color }}-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+                    <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 20H21L12 2Z" fill="currentColor"/>
+                        <path d="M8 16L12 10L16 16H8Z" fill="white"/>
+                        <path d="M2 20H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                        <a href="/categories/{{ $post->category->slug }}">{{ $post->category->name }}</a>
+                </span>
+                <span class="text-sm">{{ $post->created_at->format('j F Y') }}</span>
+            </div>
+            <a href="/posts/{{ $post->slug }}" class="hover:underline">
+                <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $post['title'] }}</h2>
+            </a>
+            <p class="mb-5 font-light text-gray-500 dark:text-gray-400">{{ Str::limit($post['content'], 75) }}</p>
+            <div class="flex justify-between items-center">
+                <a href="/authors/{{ $post->author->username }}" class="flex items-center space-x-4">
+                    <img class="w-7 h-7 rounded-full" src="{{ asset('img/snopi.jpeg') }}" alt="snopi ava" />
+                    <span class="font-medium dark:text-white">
+                        {{ $post->author->name }}
+                    </span>
+                </a>
+                <a href="/posts/{{ $post['slug'] }}" class="inline-flex items-center font-medium text-sm text-primary-600 dark:text-primary-500 hover:underline">
+                    Read more &raquo;
+                </a>
+            </div>
+        </article>          
+    @endforeach
+    ```
+- [post.blade.php](/resources/views/post.blade.php)
+    ```php
+    <article class="max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+        <header class="mb-4 lg:mb-6 not-format">
+            <a href="/posts" class="inline-flex items-center font-medium text-sm text-primary-600 dark:text-primary-500 hover:underline">                            
+                &laquo; Back to all posts
+            </a>
+            <address class="flex items-center my-6 not-italic">
+                <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                    <img class="mr-4 w-16 h-16 rounded-full" src="{{ asset('img/snopi.jpeg') }}" alt="{{ $post->author->name }}">
+                    <div>
+                        <a href="/authors/{{ $post->author->username }}" rel="author" class="text-xl font-bold text-gray-900 dark:text-white">{{ $post->author->name }}</a>
+                        <p class="text-base text-gray-500 dark:text-gray-400 mb-1">{{ $post->created_at->format('j F Y') }}</p>
+                        <span class="bg-{{ $post->category->color }}-100 text-{{ $post->category->color }}-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+                            <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L3 20H21L12 2Z" fill="currentColor"/>
+                                <path d="M8 16L12 10L16 16H8Z" fill="white"/>
+                                <path d="M2 20H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <a href="/categories/{{ $post->category->slug }}">{{ $post->category->name }}</a>
+                        </span>
+                    </div>
+                </div>
+            </address>
+            <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">{{ $post->title }}</h1>
+        </header>
+        <p>{{ $post->content }}</p>
+    </article>
+    ```
+
+these changes are all templates from the flowbite website, all we need to do is just to adjust to the title, content, and etc. as well as installing several needed packages to use the flowbite seamlessly.
+
