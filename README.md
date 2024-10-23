@@ -857,3 +857,32 @@ and the link will implement as so,
 http://assignment.test/posts?search=offic
 ```
 
+### pagination
+last UI change from this long-term assignment is to add pagination to the UI change. within the laravel package itself there is a built-in pagination feature. simply add this piece of code before and after the section in the [posts.blade.php](/resources/views/posts.blade.php).
+
+```php
+{{ $posts->links() }}
+```
+
+and add the recognizable laravel UI key reference to the [tailwind.config.js](/tailwind.config.js) in the content 
+
+```php
+content: [
+    ...
+    ...
+    './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php'
+  ],
+```
+
+the result of the pagination looks like this:
+[pagination img]
+
+not only, giving the UI (and automatically the func), there is also slight change in the routing to actually enable the pagination func itself
+
+```php
+Route::get('/posts', function () {
+    return view('posts', ['title' => 'blog', 'posts' => post::filter(request(['search', 'category', 'author']))->latest()->paginate(12)->withQueryString()]);
+});
+```
+
+and that is all of the FBP assignment assigned to us to update every week. Thank you to have reach the end of my report >.<
