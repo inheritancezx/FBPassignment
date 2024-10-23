@@ -29,6 +29,7 @@
         </div>
     </section>
 
+    {{ $posts->links() }}
     <section class="py-8 px-4 mx-auto max-w-screen-xl lg:py-6 lg:px-6">
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         @forelse ($posts as $post)                
@@ -60,12 +61,13 @@
                     </a>
                 </div>
             </article>
-        @empty
-        <div class="col-start-1 col-end-12 flex flex-col items-center justify-center">
-            <p class="font-semibold text-xl my-4">What you're looking for isn't here!!</p>
-            <a href="/posts" class="block text-blue-600 hover:underline">&laquo; back to posts</a>
-        </div>        
+            @empty
+            <div class="col-start-1 col-end-12 flex flex-col items-center justify-center">
+                <p class="font-semibold text-xl my-4">What you're looking for isn't here!!</p>
+                <a href="/posts" class="block text-blue-600 hover:underline">&laquo; back to posts</a>
+            </div>        
         @endforelse
         </div>  
     </section>
+    {{ $posts->links() }}
 </x-layout>
